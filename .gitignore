@@ -1,0 +1,12 @@
+venv/
+datafiles/
+.idea/
+logs/
+datafiles_backup/
+*.pyc
+*.log
+*.xlsx
+
+
+
+
