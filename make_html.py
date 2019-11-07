@@ -13,7 +13,8 @@ def tagged(tag: str, content: str, *attr) -> str:
 
 
 def render_method(node: BizDataNode) -> str:
-    content = tagged('span', node.name + ': ', 'class="cust_name"') + tagged('span', node.value, 'class="number"')
+    content = tagged('span', node.name + ': ', 'class="customer_name"') + \
+              tagged('span', node.value, 'class="number"')
     next_level = ''
 
     if len(node.children) > 0:
@@ -21,4 +22,4 @@ def render_method(node: BizDataNode) -> str:
             next_level += render_method(child_node)
         next_level = tagged('ul', next_level)
 
-    return tagged('li', content + next_level)
+    return tagged('li', content + next_level, 'id="{0}"'.format(node.id))
