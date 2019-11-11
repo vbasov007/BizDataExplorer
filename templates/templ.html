@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="context-menu" style="display:none">
+  <!-- The actual menu that will be displayed-->
+  <ul class="dropdown-menu">
+      {% for dc in drill_down_by %}
+        <li class="drill-down-item">{{ dc }}</li>
+      {% endfor %}
+  </ul>
+</div>
+
+    <ul>
+        {% autoescape off %}
+        {{ content }}
+        {% endautoescape %}
+    </ul>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/lib/contextmenu.js') }}" ></script>
+    <script type="text/javascript">
+
+        function collapse(node_id){
+            console.log(node_id);
+            const data = {
+                command: 'collapse',
+                id: node_id,
+                };
+            $.get('/', data, function(data, status){
+                location.reload();
+                });
+        }
+
+        function expand(node_id, expand_by){
+            console.log(node_id);
+            const data = {
+                command: 'expand',
+                id: node_id,
+                by: expand_by
+                };
+            $.get('/', data, function(data, status){
+                location.reload();
+                });
+        }
+
+        $(document).ready(function(){
+
+            let clicked_node_id;
+
+
+            $('.btn')
+                .on('click', function(){
+                    collapse($(this).attr('id'))
+                    })
+                .on('contextmenu', function () {
+                    clicked_node_id = $(this).attr('id')
+                    })
+                .contextmenu({
+                    target: "#context-menu",
+                });
+
+            $('.drill-down-item').on('click', function () {
+                expand(clicked_node_id, $(this).text())
+            })
+        });
+    </script>
+</body>
+</html>

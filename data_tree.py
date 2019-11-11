@@ -3,9 +3,10 @@ import pandas as pd
 import uuid
 import numpy as np
 
-# from typing import List, Tuple
 from error import Error
-from mylogger import mylog
+
+
+# from mylogger import mylog
 
 
 class BizDataNode(NodeMixin):
@@ -47,11 +48,15 @@ class BizDataTree:
 
         return Error(None)
 
-    def expand(self, node_id, by: str) -> Error:
+    def expand_id(self, node_id, by: str) -> Error:
         current_node, error = self._node_by_id(node_id)
 
         if error:
             return error
+
+        return self.expand_node(current_node, by)
+
+    def expand_node(self, current_node: BizDataNode, by: str) -> Error:
 
         subset_df = self._subset_df(current_node)
         dv_list, error = self._different_values(subset_df, by)
@@ -66,6 +71,12 @@ class BizDataTree:
             BizDataNode(v, str(s), parent=current_node, subset_filter=flt)
 
         return Error(None)
+
+    def expand_by_name(self, name: str, by: str, parent_node=None) -> Error:
+        node, error = self._node_by_name(name, parent_node)
+        if error:
+            return error
+        return self.expand_node(node, by)
 
     def is_expanded(self, node_id) -> (bool, Error):
         current_node, error = self._node_by_id(node_id)
@@ -88,15 +99,15 @@ class BizDataTree:
         if expanded:
             self.collapse(node_id)
         else:
-            self.expand(node_id, by)
+            self.expand_id(node_id, by)
 
         return Error(None)
 
     def print_console(self):
         print(RenderTree(self._root))
 
-    def render_html(self, render_method) -> str:
-        return render_method(self._root)
+    def render_html(self, render_method, sort_param: dict = None, number_format: dict = None) -> str:
+        return render_method(self._root, sort_param, number_format)
 
     def _subset_df(self, current_node) -> pd.DataFrame:
 
@@ -115,6 +126,15 @@ class BizDataTree:
             if node.id == node_id:
                 return node, Error(None)
         return None, Error("No such node:{0}".format(node_id))
+
+    def _node_by_name(self, name, start_node=None) -> (BizDataNode, Error):
+        if start_node is None:
+            start_node = self._root
+        node: BizDataNode
+        for node in PreOrderIter(start_node):
+            if node.name == name:
+                return node, Error(None)
+        return None, Error("No such node:{0}".format(name))
 
     def _sum(self, df: pd.DataFrame, subset_filter=None):
 
