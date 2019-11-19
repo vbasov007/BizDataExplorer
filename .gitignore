@@ -6,7 +6,7 @@ datafiles_backup/
 *.pyc
 *.log
 *.xlsx
-static/js/lib/
+static/
 
 
 

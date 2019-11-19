@@ -1,0 +1,42 @@
+folder: 'datafiles'
+
+pos_files:
+  - 'finalpos1819.xlsx'
+
+dreg_files:
+  - 'dreg.xlsx'
+
+aliases:
+  - file: "aliases.xlsx"
+    key_col: "FINAL MC"
+    new_col: "CORE CUSTOMER"
+
+# merge:
+#  - file: "product_hierarchy.xlsx"
+#    pos_file_key: 'SALES PRODUCT'
+#    merge_file_key: 'Ispn'
+#    merge_res_key: 'ParentHierarchyNodeName'
+#    new_col: 'Product Hierarchy'
+
+drill_down_by:
+  - 'DISTRIBUTOR'
+  - 'FINAL MC'
+  - 'CORE CUSTOMER'
+  - 'COUNTRY FC'
+  - 'DIV'
+  - 'PL'
+  - 'HFG'
+  - 'SALES PRODUCT'
+  - 'PRODUCT CLASS'
+
+sum_by: 'POS FY'
+
+number_format:
+  'divider': 1000.0
+  'format': '{:1.0f}'
+  'ending': ' K'
+
+sort_param:
+  'top_n': 10
+  'min': 1000.0
+

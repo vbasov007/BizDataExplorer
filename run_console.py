@@ -15,7 +15,7 @@ from excel import read_excel
 
 from make_html import render_method_basic
 
-import cfg
+import dt
 
 
 def main():
@@ -30,28 +30,28 @@ def main():
         mylog.error(error)
         return
 
-    cfg.data_tree = BizDataTree(df, 'POS FY')
+    dt.data_tree = BizDataTree(df, 'POS FY')
 
     while True:
-        cfg.data_tree.print_console()
-        html = cfg.data_tree.render_html(render_method_basic)
+        dt.data_tree.print_console()
+        html = dt.data_tree.render_html(render_method_basic)
 
         with open(file_out, "w") as text_file:
             print(html, file=text_file)
 
         node_id = input("Click on id:")
 
-        expanded, error = cfg.data_tree.is_expanded(node_id)
+        expanded, error = dt.data_tree.is_expanded(node_id)
 
         if error:
             mylog.error(error)
             continue
 
         if expanded:
-            cfg.data_tree.collapse(node_id)
+            dt.data_tree.collapse(node_id)
         else:
             drill_by = input("Drill by:")
-            error = cfg.data_tree.expand_id(node_id, drill_by)
+            error = dt.data_tree.expand_id(node_id, drill_by)
             if error:
                 mylog.error(error)
                 continue
