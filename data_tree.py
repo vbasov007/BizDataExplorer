@@ -1,12 +1,13 @@
 from anytree import NodeMixin, PostOrderIter, PreOrderIter, RenderTree
+from anytree.exporter import DictExporter
 import pandas as pd
-import uuid
 import numpy as np
+
+import uuid
 
 from error import Error
 
-
-# from mylogger import mylog
+from mylogger import mylog
 
 
 class BizDataNode(NodeMixin):
@@ -23,6 +24,9 @@ class BizDataNode(NodeMixin):
 
     def __str__(self):
         return str((self.id, self.name, self.value, self.subset_filter))
+
+    def tree_to_dict(self):
+        return DictExporter().export(self)
 
 
 class BizDataTree:
@@ -64,10 +68,13 @@ class BizDataTree:
         if error:
             return error
 
-        df = self._subset_df(current_node)
+        # df = self._subset_df(current_node)
+
+        mylog.debug("{0} unique values".format(len(dv_list)))
+
         for v in dv_list:
             flt = {'column': by, 'value': v}
-            s = self._sum(df, flt)
+            s = self._sum(subset_df, flt)
             BizDataNode(v, str(s), parent=current_node, subset_filter=flt)
 
         return Error(None)
@@ -138,8 +145,12 @@ class BizDataTree:
 
     def _sum(self, df: pd.DataFrame, subset_filter=None):
 
+        #        if subset_filter is not None:
+        #            df = df[df[subset_filter['column']] == subset_filter['value']]
         if subset_filter is not None:
-            df = df[df[subset_filter['column']] == subset_filter['value']]
+            f_col = subset_filter['column']
+            f_val = subset_filter['value']
+            return df.loc[np.isin(df[f_col], f_val), self._sum_by].sum()
 
         return df[self._sum_by].sum()
 
@@ -163,3 +174,6 @@ class BizDataTree:
 
         res.reverse()
         return res
+
+    def tree_to_dict(self):
+        return self._root.tree_to_dict()

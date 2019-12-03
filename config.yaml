@@ -31,12 +31,40 @@ drill_down_by:
 
 sum_by: 'POS FY'
 
+crop_data:
+  - col_name: 'CORE CUSTOMER'
+    sum_by: 'POS FY'
+    less_then: 30000.0
+    replace_with: 'CUSTOMERS <30K EUR'
+  - col_name: 'SALES PRODUCT'
+    sum_by: 'POS FY'
+    less_then: 5000.0
+    replace_with: 'PRODUCTS <5K EUR'
+
+
 number_format:
-  'divider': 1000.0
-  'format': '{:1.0f}'
-  'ending': ' K'
+  divider: 1000.0
+  format: '{:1.0f}'
+  ending: ' K'
 
 sort_param:
-  'top_n': 10
-  'min': 1000.0
+  top_n: 1000
+  min: 0
+
+display_elements:
+    - name: 'something'
+      type: 'table'
+      columns:
+        - 'customer'
+        - 'part number'
+        - 'value'
+        - 'date'
+
+# pages:
+#  - name: 'blabla'
+#    title: 'NKNKN'
+#    elements:
+#      - 'something'
+#        position: 123
+
 

@@ -8,6 +8,8 @@ Options:
 from docopt import docopt
 from flask import Flask, request, render_template
 import yaml
+# import timeit
+
 from data_tree import BizDataTree
 from mylogger import mylog
 from excel import read_excel
@@ -18,6 +20,10 @@ from lookup import lookup_and_add, lookup_dict_by_df
 
 from make_html import render_method
 
+from data_cropping import crop_data
+
+
+# import cProfile
 
 def new_flask():
     return Flask(__name__)
@@ -66,7 +72,13 @@ def run_flask():
             lookup_and_add(df,
                            key_col=merge_cfg['pos_file_key'],
                            new_col=merge_cfg['new_col'],
-                           lookup_dict=lookup_dict_by_df(merge_df, merge_cfg['merge_file_key'], merge_cfg['merge_res_key']))
+                           lookup_dict=lookup_dict_by_df(
+                               merge_df,
+                               merge_cfg['merge_file_key'],
+                               merge_cfg['merge_res_key']))
+
+    for item in glb.cfg['crop_data']:
+        crop_data(df, item['col_name'], item['sum_by'], item['less_then'], item['replace_with'])
 
     glb.data_tree = BizDataTree(df, glb.cfg['sum_by'])
 
@@ -93,6 +105,9 @@ def test():
 
         if command == 'expand':
 
+            # pr = cProfile.Profile()
+            # pr.enable()
+
             expanded, _ = glb.data_tree.is_expanded(node_id)
             if expanded:
                 glb.data_tree.collapse(node_id)
@@ -100,6 +115,9 @@ def test():
             expand_by = request.args.get('by')
             error = glb.data_tree.expand_id(node_id, expand_by)
             mylog.debug(error)
+
+            # pr.disable()
+            # pr.print_stats()
 
     html = glb.data_tree.render_html(render_method,
                                      sort_param=glb.cfg['sort_param'],
