@@ -1,32 +1,10 @@
-from anytree import NodeMixin, PostOrderIter, PreOrderIter, RenderTree
-from anytree.exporter import DictExporter
+from anytree import PostOrderIter, PreOrderIter, RenderTree
 import pandas as pd
 import numpy as np
 
-import uuid
-
 from error import Error
-
 from mylogger import mylog
-
-
-class BizDataNode(NodeMixin):
-
-    def __init__(self, name: str = '', value: str = '', parent=None, subset_filter: dict = None):
-        self.subset_filter = subset_filter
-        self.name = name
-        self.value = value
-        self.parent = parent
-        self.id = uuid.uuid1().hex
-
-    def __repr__(self):
-        return self.__str__()
-
-    def __str__(self):
-        return str((self.id, self.name, self.value, self.subset_filter))
-
-    def tree_to_dict(self):
-        return DictExporter().export(self)
+from bizdatanode import BizDataNode
 
 
 class BizDataTree:

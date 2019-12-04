@@ -34,12 +34,12 @@ sum_by: 'POS FY'
 crop_data:
   - col_name: 'CORE CUSTOMER'
     sum_by: 'POS FY'
-    less_then: 30000.0
-    replace_with: 'CUSTOMERS <30K EUR'
+    less_then: 50000.0
+    replace_with: 'CUSTOMERS <50K EUR'
   - col_name: 'SALES PRODUCT'
     sum_by: 'POS FY'
-    less_then: 5000.0
-    replace_with: 'PRODUCTS <5K EUR'
+    less_then: 10000.0
+    replace_with: 'PRODUCTS <10K EUR'
 
 
 number_format:
