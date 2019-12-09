@@ -14,7 +14,7 @@ class BizDataTree:
         df = df.replace(np.nan, 0, regex=True)
 
         value = df[sum_by].sum()
-        self._root = BizDataNode('root', str(value))
+        self.root = BizDataNode('root', str(value))
         self._df = df
         self._sum_by = sum_by
 
@@ -89,10 +89,7 @@ class BizDataTree:
         return Error(None)
 
     def print_console(self):
-        print(RenderTree(self._root))
-
-    def render_html(self, render_method, sort_param: dict = None, number_format: dict = None) -> str:
-        return render_method(self._root, sort_param, number_format)
+        print(RenderTree(self.root))
 
     def _subset_df(self, current_node) -> pd.DataFrame:
 
@@ -107,14 +104,14 @@ class BizDataTree:
         return subset_df
 
     def _node_by_id(self, node_id) -> (BizDataNode, Error):
-        for node in PreOrderIter(self._root):
+        for node in PreOrderIter(self.root):
             if node.id == node_id:
                 return node, Error(None)
         return None, Error("No such node:{0}".format(node_id))
 
     def _node_by_name(self, name, start_node=None) -> (BizDataNode, Error):
         if start_node is None:
-            start_node = self._root
+            start_node = self.root
         node: BizDataNode
         for node in PreOrderIter(start_node):
             if node.name == name:
@@ -154,4 +151,4 @@ class BizDataTree:
         return res
 
     def tree_to_dict(self):
-        return self._root.tree_to_dict()
+        return self.root.tree_to_dict()

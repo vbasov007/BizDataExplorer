@@ -28,7 +28,7 @@ def render_method_basic(node: BizDataNode) -> str:
     return tagged('li', content + next_level)
 
 
-def render_method(node: BizDataNode, sort_param: dict = None, number_format: dict = None) -> str:
+def render_bizdatanode_html(node: BizDataNode, sort_param: dict = None, number_format: dict = None) -> str:
     if sort_param is None:
         sort_param = {}
     if number_format is None:
@@ -53,7 +53,7 @@ def render_method(node: BizDataNode, sort_param: dict = None, number_format: dic
     if len(node.children) > 0:
 
         for child_node in node.children:
-            next_level.append({'text': render_method(child_node, sort_param, number_format),
+            next_level.append({'text': render_bizdatanode_html(child_node, sort_param, number_format),
                                'value': child_node.value,
                                })
 

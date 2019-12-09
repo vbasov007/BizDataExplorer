@@ -28,3 +28,11 @@ class Error:
 
     def __bool__(self):
         return self._val is not None
+
+
+def is_error(obj):
+    return isinstance(obj, Error)
+
+
+def is_not_error(obj):
+    return not is_error(obj)
