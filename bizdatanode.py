@@ -11,6 +11,7 @@ class BizDataNode(NodeMixin):
         self.value = value
         self.parent = parent
         self.id = uuid.uuid1().hex
+        self.label = ''
 
     def __repr__(self):
         return self.__str__()
@@ -20,3 +21,7 @@ class BizDataNode(NodeMixin):
 
     def tree_to_dict(self):
         return DictExporter().export(self)
+
+    def children_by_label(self, label: str) -> list:
+        res: list = [ch for ch in self.children if ch.label == label]
+        return res

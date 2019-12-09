@@ -34,7 +34,11 @@ class NumberTreeWebPage:
 
     def html(self) -> str:
         content = render_bizdatanode_html(self.biz_data_tree.root,
-                                       sort_param=self.config['sort_param'],
-                                       number_format=self.config['number_format'])
+                                          sort_param=self.config['sort_param'],
+                                          number_format=self.config['number_format'])
 
         return flask.render_template('templ.html', content=content, drill_down_by=self.config['drill_down_by'])
+
+
+class TableTreeWebPage(NumberTreeWebPage):
+    pass
