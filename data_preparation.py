@@ -36,6 +36,12 @@ def merge_in_place(working_df: pd.DataFrame, merge_cfg: dict, working_folder) ->
             mylog.error("Can't use merge file: {0}".format(merge_file_path))
 
 
+def unpivot(working_df: pd.DataFrame, columns_to_unpivot: list, var_name, value_name) -> pd.DataFrame:
+    id_vars = [v for v in working_df.columns if v not in columns_to_unpivot]
+    res_df = working_df.melt(id_vars=id_vars, var_name=var_name, value_name=value_name)
+    return res_df
+
+
 def lookup_dict_by_df(alias_df: pd.DataFrame, lookup_col, res_col):
     res = dict()
     for _, row in alias_df.iterrows():

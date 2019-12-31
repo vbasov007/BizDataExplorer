@@ -1,44 +1,47 @@
-import pandas as pd
-
 from data_tree import BizDataTree
-import flask
-from render_number_tree import render_bizdatanode_html
 from mylogger import mylog
+from tree_to_dict import tree_to_dict
+from render import Render
 
 
-class NumberTreeWebPage:
+class WebPageController:
 
-    def __init__(self, data_df: pd.DataFrame, config: dict):
-        self.biz_data_tree = BizDataTree(data_df, config['sum_by'])
-        self.config = config
+    def __init__(self, data: BizDataTree, render_obj: Render, config: dict):
+        self.data = data
+        self.render_obj = render_obj
+        self.sort_param = config['sort_param']
+        self.number_format = config['number_format']
 
-    def process_request(self, request_args) -> None:
+    def process_request(self, request):
+
+        if request.method == 'GET':
+            return self.response(content_only=False)
+        elif request.method == 'POST':
+            self.command(request_args=request.form)
+            return self.response(content_only=True)
+
+    def command(self, request_args) -> None:
 
         command = request_args.get('command')
         node_id = request_args.get('id')
 
         if node_id:
             if command == 'collapse':
-                expanded, _ = self.biz_data_tree.is_expanded(node_id)
+                expanded, _ = self.data.is_expanded(node_id)
                 if expanded:
-                    self.biz_data_tree.collapse(node_id)
+                    self.data.collapse(node_id)
 
             if command == 'expand':
-                expanded, _ = self.biz_data_tree.is_expanded(node_id)
+                expanded, _ = self.data.is_expanded(node_id)
                 if expanded:
-                    self.biz_data_tree.collapse(node_id)
+                    self.data.collapse(node_id)
 
                 expand_by = request_args.get('by')
-                error = self.biz_data_tree.expand_id(node_id, expand_by)
+                error = self.data.expand_id(node_id, expand_by)
                 mylog.debug(error)
 
-    def html(self) -> str:
-        content = render_bizdatanode_html(self.biz_data_tree.root,
-                                          sort_param=self.config['sort_param'],
-                                          number_format=self.config['number_format'])
-
-        return flask.render_template('templ.html', content=content, drill_down_by=self.config['drill_down_by'])
-
-
-class TableTreeWebPage(NumberTreeWebPage):
-    pass
+    def response(self, content_only=True):
+        return self.render_obj.render(tree_to_dict(self.data.root,
+                                                   sort_param=self.sort_param,
+                                                   number_format=self.number_format),
+                                      content_only=content_only)

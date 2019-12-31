@@ -10,69 +10,106 @@
 </head>
 <body>
 <div id="context-menu" style="display:none">
-  <!-- The actual menu that will be displayed-->
-  <ul class="dropdown-menu">
-      {% for dc in drill_down_by %}
+    <!-- The actual menu that will be displayed-->
+    <ul class="dropdown-menu">
+        {% for dc in drill_down_by %}
         <li class="drill-down-item">{{ dc }}</li>
-      {% endfor %}
-  </ul>
+        {% endfor %}
+    </ul>
 </div>
 
-    <ul>
-        {% autoescape off %}
-        {{ content }}
-        {% endautoescape %}
-    </ul>
+<ul id="content">
+    {% autoescape off %}
+    {{ content }}
+    {% endautoescape %}
+</ul>
 
 
+<script src="{{ url_for('static', filename ='js/lib/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lib/contextmenu.js') }}"></script>
+<script type="text/javascript">
 
-    <script src="{{ url_for('static', filename ='js/lib/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/lib/contextmenu.js') }}" ></script>
-    <script type="text/javascript">
+    let clicked_node_id;
 
-        function collapse(node_id){
-            console.log(node_id);
-            const data = {
-                command: 'collapse',
-                id: node_id,
-                };
-            $.get('/', data, function(data, status){
-                location.reload();
-                });
-        }
+    function on_load() {
 
-        function expand(node_id, expand_by){
-            console.log(node_id);
-            const data = {
-                command: 'expand',
-                id: node_id,
-                by: expand_by
-                };
-            $.get('/', data, function(data, status){
-                location.reload();
-                });
-        }
+        //let clicked_node_id;
 
-        $(document).ready(function(){
+        $('.btn')
+            .on('click', function () {
+                let collapse_id = $(this).attr('id');
+                collapse(collapse_id);
 
-            let clicked_node_id;
-
-
-            $('.btn')
-                .on('click', function(){
-                    collapse($(this).attr('id'))
-                    })
-                .on('contextmenu', function () {
-                    clicked_node_id = $(this).attr('id')
-                    })
-                .contextmenu({
-                    target: "#context-menu",
-                });
-
-            $('.drill-down-item').on('click', function () {
-                expand(clicked_node_id, $(this).text())
             })
+            .on('contextmenu', function () {
+                clicked_node_id = $(this).attr('id');
+                console.log("context menu", clicked_node_id)
+            })
+            .contextmenu({
+                target: "#context-menu",
+            });
+
+        $('.drill-down-item').on('click', function () {
+            console.log("expand", clicked_node_id);
+            expand(clicked_node_id, $(this).text())
+        })
+    }
+
+    function collapse(node_id) {
+        console.log(node_id);
+        const data = {
+            command: 'collapse',
+            id: node_id,
+        };
+        $.post('/', data, function (resp) {
+            $("#content").html(resp);
+            //on_load()
+            location.reload()
         });
-    </script>
+    }
+
+    function expand(node_id, expand_by) {
+        console.log(node_id);
+        const data = {
+            command: 'expand',
+            id: node_id,
+            by: expand_by
+        };
+        $.post('/', data, function (resp) {
+            $("#content").html(resp);
+            //on_load();
+            location.reload()
+        });
+    }
+
+
+/*
+    $(document).ready(function () {
+
+        let clicked_node_id;
+
+
+        $('.btn')
+            .on('click', function () {
+                collapse($(this).attr('id'))
+            })
+            .on('contextmenu', function () {
+                clicked_node_id = $(this).attr('id')
+            })
+            .contextmenu({
+                target: "#context-menu",
+            });
+
+        $('.drill-down-item').on('click', function () {
+            expand(clicked_node_id, $(this).text())
+        })
+    });
+ */
+
+    $(document).ready(function () {
+        on_load();
+    });
+
+</script>
 </body>
 </html>

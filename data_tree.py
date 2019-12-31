@@ -8,7 +8,9 @@ from bizdatanode import BizDataNode
 
 
 class BizDataTree:
-    def __init__(self, df: pd.DataFrame, sum_by: str):
+    def __init__(self, source_df: pd.DataFrame, sum_by: str):
+
+        df = source_df.copy()
 
         df[sum_by] = pd.to_numeric(df[sum_by], errors='coerce')
         df = df.replace(np.nan, 0, regex=True)
@@ -29,6 +31,14 @@ class BizDataTree:
                 node.parent = None
 
         return Error(None)
+
+    def expand_2d(self, current_node, by_1: str, by_2: str):
+        self.expand_node(current_node, by_1)
+        for child_node in current_node.children:
+            self.expand_node(child_node, by_2)
+
+    def expand_root_2d(self, by_1: str, by_2: str):
+        self.expand_2d(self.root, by_1, by_2)
 
     def expand_id(self, node_id, by: str) -> Error:
         current_node, error = self._node_by_id(node_id)
@@ -149,6 +159,3 @@ class BizDataTree:
 
         res.reverse()
         return res
-
-    def tree_to_dict(self):
-        return self.root.tree_to_dict()

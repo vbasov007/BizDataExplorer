@@ -1,15 +1,28 @@
-folder: 'datafiles'
 
-pos_files:
-  - 'finalpos1819.xlsx'
+common:
+  folder: 'datafiles'
 
-dreg_files:
-  - 'dreg.xlsx'
+  pos_files:
+    - 'testpos_short.xlsx'
+#    - 'finalpos1819.xlsx'
 
-aliases:
-  - file: "aliases.xlsx"
-    key_col: "FINAL MC"
-    new_col: "CORE CUSTOMER"
+  dreg_files:
+    - 'dreg.xlsx'
+
+  crop_data:
+    - col_name: 'CORE CUSTOMER'
+      sum_by: 'POS FY'
+      less_then: 50000.0
+      replace_with: 'CUSTOMERS <50K EUR'
+    - col_name: 'SALES PRODUCT'
+      sum_by: 'POS FY'
+      less_then: 10000.0
+      replace_with: 'PRODUCTS <10K EUR'
+
+  aliases:
+    - file: "aliases.xlsx"
+      key_col: "FINAL MC"
+      new_col: "CORE CUSTOMER"
 
 # merge:
 #  - file: "product_hierarchy.xlsx"
@@ -18,53 +31,72 @@ aliases:
 #    merge_res_key: 'ParentHierarchyNodeName'
 #    new_col: 'Product Hierarchy'
 
-drill_down_by:
-  - 'DISTRIBUTOR'
-  - 'FINAL MC'
-  - 'CORE CUSTOMER'
-  - 'COUNTRY FC'
-  - 'DIV'
-  - 'PL'
-  - 'HFG'
-  - 'SALES PRODUCT'
-  - 'PRODUCT CLASS'
+views:
+  - name: 'number tree'
 
-sum_by: 'POS FY'
+    template: 'templ.html'
+    structure: 'tree'
 
-crop_data:
-  - col_name: 'CORE CUSTOMER'
+    drill_down_by:
+      - 'DISTRIBUTOR'
+      - 'FINAL MC'
+      - 'CORE CUSTOMER'
+      - 'COUNTRY FC'
+      - 'DIV'
+      - 'PL'
+      - 'HFG'
+      - 'SALES PRODUCT'
+      - 'PRODUCT CLASS'
+
     sum_by: 'POS FY'
-    less_then: 50000.0
-    replace_with: 'CUSTOMERS <50K EUR'
-  - col_name: 'SALES PRODUCT'
-    sum_by: 'POS FY'
-    less_then: 10000.0
-    replace_with: 'PRODUCTS <10K EUR'
 
+    number_format:
+      divider: 1000.0
+      format: '{:1.0f}'
+      ending: ' K'
 
-number_format:
-  divider: 1000.0
-  format: '{:1.0f}'
-  ending: ' K'
+    sort_param:
+      top_n: 1000
+      min: 0
 
-sort_param:
-  top_n: 1000
-  min: 0
+  - name: 'table tree'
 
-display_elements:
-    - name: 'something'
-      type: 'table'
-      columns:
-        - 'customer'
-        - 'part number'
-        - 'value'
-        - 'date'
+    template: 'templ.html'
+    structure: 'table_tree'
 
-# pages:
-#  - name: 'blabla'
-#    title: 'NKNKN'
-#    elements:
-#      - 'something'
-#        position: 123
+    drill_down_by:
+      - 'DISTRIBUTOR'
+      - 'FINAL MC'
+      - 'CORE CUSTOMER'
+      - 'COUNTRY FC'
+      - 'DIV'
+      - 'PL'
+      - 'HFG'
+      - 'SALES PRODUCT'
+      - 'PRODUCT CLASS'
 
+    sum_columns:
+      - 'POS Q1-1'
+      - 'POS Q2-1'
+      - 'POS Q3-1'
+      - 'POS Q4-1'
+      - 'POS FY-1'
+      - 'POS Q1'
+      - 'POS Q2'
+      - 'POS Q3'
+      - 'POS Q4'
+      - 'POS FY'
 
+    sum_by: 'SUM'
+
+    expand_by_1: 'DISTRIBUTOR'
+    expand_by_2: 'time_period'
+
+    number_format:
+      divider: 1000.0
+      format: '{:1.0f}'
+      ending: ' K'
+
+    sort_param:
+      top_n: 1000
+      min: 0
